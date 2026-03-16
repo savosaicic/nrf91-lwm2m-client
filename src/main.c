@@ -5,6 +5,8 @@
 #include <zephyr/sys/reboot.h>
 #include <modem/nrf_modem_lib.h>
 
+#include "temperature.h"
+
 LOG_MODULE_REGISTER(nrf91_lwm2m_client);
 
 #define SERVER_URL    "coap://your-lwm2m-server:5683"
@@ -196,9 +198,17 @@ static void setup_device_object(void)
 
 static int lwm2m_setup(void)
 {
+  int ret;
+
   setup_security_object();
   setup_server_object();
   setup_device_object();
+
+  ret = setup_temperature_sensor();
+  if (ret < 0) {
+    LOG_ERR("Temperature object setup failed: %d", ret);
+    return ret;
+  }
 
   return 0;
 }

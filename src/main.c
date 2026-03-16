@@ -70,6 +70,29 @@ static int modem_configure(void)
   return 0;
 }
 
+static void observe_cb(enum lwm2m_observe_event event,
+                       struct lwm2m_obj_path *path, void *user_data)
+{
+  char buf[LWM2M_MAX_PATH_STR_SIZE];
+
+  switch (event) {
+  case LWM2M_OBSERVE_EVENT_OBSERVER_ADDED:
+    LOG_INF("Observer added for %s", lwm2m_path_log_buf(buf, path));
+    break;
+  case LWM2M_OBSERVE_EVENT_OBSERVER_REMOVED:
+    LOG_INF("Observer removed for %s", lwm2m_path_log_buf(buf, path));
+    break;
+  case LWM2M_OBSERVE_EVENT_NOTIFY_ACK:
+    LOG_INF("Notify ACK for %s", lwm2m_path_log_buf(buf, path));
+    break;
+  case LWM2M_OBSERVE_EVENT_NOTIFY_TIMEOUT:
+    LOG_WRN("Notify timeout for %s — triggering reg update",
+            lwm2m_path_log_buf(buf, path));
+    lwm2m_rd_client_update();
+    break;
+  }
+}
+
 static void rd_client_event(struct lwm2m_ctx *client,
                             enum lwm2m_rd_client_event event)
 {
@@ -231,7 +254,8 @@ int main(void)
   }
 
   memset(&client_ctx, 0, sizeof(client_ctx));
-  lwm2m_rd_client_start(&client_ctx, ENDPOINT_NAME, 0, rd_client_event, NULL);
+  lwm2m_rd_client_start(&client_ctx, ENDPOINT_NAME, 0, rd_client_event,
+                        observe_cb);
 
   while (1) {
     k_sleep(K_FOREVER);

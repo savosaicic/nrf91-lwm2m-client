@@ -6,11 +6,12 @@
 #include <modem/nrf_modem_lib.h>
 
 #include "temperature.h"
+#include "time_object.h"
 
 LOG_MODULE_REGISTER(nrf91_lwm2m_client);
 
-#define SERVER_URL    "coap://your-lwm2m-server:5683"
-#define ENDPOINT_NAME "your-endpoint-name"
+#define SERVER_URL    "coap://eu.iot.avsystem.cloud:5683"
+#define ENDPOINT_NAME "test_ovas"
 #define SERVER_ID     1
 #define LIFETIME_S    60
 
@@ -230,6 +231,12 @@ static int lwm2m_setup(void)
   ret = setup_temperature_sensor();
   if (ret < 0) {
     LOG_ERR("Temperature object setup failed: %d", ret);
+    return ret;
+  }
+
+  ret = setup_time_object();
+  if (ret < 0) {
+    LOG_ERR("Time object setup failed: %d", ret);
     return ret;
   }
 

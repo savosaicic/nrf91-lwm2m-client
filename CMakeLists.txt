@@ -4,4 +4,8 @@ find_package(Zephyr REQUIRED HINTS $ENV{ZEPHYR_BASE})
 project(nrf91_lwm2m_client)
 
 target_include_directories(app PRIVATE include)
-target_sources(app PRIVATE src/main.c src/temperature.c)
+target_sources(app PRIVATE
+  src/main.c
+  src/temperature.c
+  src/ecompass.c
+)

@@ -6,6 +6,7 @@
 #include <modem/nrf_modem_lib.h>
 
 #include "temperature.h"
+#include "ecompass.h"
 
 LOG_MODULE_REGISTER(nrf91_lwm2m_client);
 
@@ -230,6 +231,12 @@ static int lwm2m_setup(void)
   ret = setup_temperature_sensor();
   if (ret < 0) {
     LOG_ERR("Temperature object setup failed: %d", ret);
+    return ret;
+  }
+
+  ret = setup_ecompass();
+  if (ret < 0) {
+    LOG_ERR("eCompass object setup failed: %d", ret);
     return ret;
   }
 

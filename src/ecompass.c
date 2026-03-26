@@ -18,7 +18,7 @@ static double accel_z = 0.0;
 
 static void ecompass_work_handler(struct k_work *work)
 {
-  struct sensor_value value[3];
+  struct sensor_value accel_xyz[3];
   int                 ret;
 
   ret = sensor_sample_fetch(accel);
@@ -27,26 +27,26 @@ static void ecompass_work_handler(struct k_work *work)
     goto reschedule;
   }
 
-  ret = sensor_channel_get(accel, SENSOR_CHAN_ACCEL_XYZ, value);
+  ret = sensor_channel_get(accel, SENSOR_CHAN_ACCEL_XYZ, accel_xyz);
   if (ret < 0) {
     LOG_ERR("Failed to get accel data: %d", ret);
     goto reschedule;
   }
 
-  ret =
-    lwm2m_set_f64(&LWM2M_OBJ(3313, 0, 5702), sensor_value_to_double(&value[0]));
+  ret = lwm2m_set_f64(&LWM2M_OBJ(3313, 0, 5702),
+                      sensor_value_to_double(&accel_xyz[0]));
   if (ret < 0) {
     LOG_ERR("Failed to set accel X: %d", ret);
   }
 
-  ret =
-    lwm2m_set_f64(&LWM2M_OBJ(3313, 0, 5703), sensor_value_to_double(&value[1]));
+  ret = lwm2m_set_f64(&LWM2M_OBJ(3313, 0, 5703),
+                      sensor_value_to_double(&accel_xyz[1]));
   if (ret < 0) {
     LOG_ERR("Failed to set accel Y: %d", ret);
   }
 
-  ret =
-    lwm2m_set_f64(&LWM2M_OBJ(3313, 0, 5704), sensor_value_to_double(&value[2]));
+  ret = lwm2m_set_f64(&LWM2M_OBJ(3313, 0, 5704),
+                      sensor_value_to_double(&accel_xyz[2]));
   if (ret < 0) {
     LOG_ERR("Failed to set accel Z: %d", ret);
   }
